@@ -1,0 +1,997 @@
+@startuml
+set namespaceSeparator ::
+
+class "instafake_flutter::core::data::models::comment_model.dart::CommentModel" {
+  +int id
+  +String comment
+  +String author
+  +DateTime timestamp
+  +String? commenterProfPic
+  {static} +List<CommentModel> fromJsonList()
+}
+
+"hive::src::object::hive_object.dart::HiveObject" <|-- "instafake_flutter::core::data::models::comment_model.dart::CommentModel"
+
+class "instafake_flutter::core::data::models::comment_model.dart::CommentModelAdapter" {
+  +int typeId
+  +int hashCode
+  +CommentModel read()
+  +void write()
+  +bool ==()
+}
+
+"hive::hive.dart::TypeAdapter" <|-- "instafake_flutter::core::data::models::comment_model.dart::CommentModelAdapter"
+
+class "instafake_flutter::core::data::models::post_model.dart::PostModel" {
+  +int id
+  +String fileUrl
+  +String fileName
+  +String caption
+  +String creatorUsername
+  +String? creatorProfPicUrl
+  +DateTime createdAt
+  +List<CommentModel>? comments
+  +List<int>? likeUserIds
+  +bool? isLiked
+  +bool? isCommentExpanded
+  +bool? isCaptionExpanded
+  {static} +dynamic fromJsonList()
+}
+
+"hive::src::object::hive_object.dart::HiveObject" <|-- "instafake_flutter::core::data::models::post_model.dart::PostModel"
+
+class "instafake_flutter::core::data::models::post_model.dart::PostModelAdapter" {
+  +int typeId
+  +int hashCode
+  +PostModel read()
+  +void write()
+  +bool ==()
+}
+
+"hive::hive.dart::TypeAdapter" <|-- "instafake_flutter::core::data::models::post_model.dart::PostModelAdapter"
+
+class "instafake_flutter::core::data::models::post_thumbnail_model.dart::PostThumbnailModel" {
+  +int postId
+  +String fileUrl
+  +String fileName
+  +String caption
+  +DateTime createdAt
+  +int userId
+  {static} +dynamic fromJsonList()
+}
+
+class "instafake_flutter::core::data::models::post_thumbnail_model.dart::PostThumbnailModelAdapter" {
+  +int typeId
+  +int hashCode
+  +PostThumbnailModel read()
+  +void write()
+  +bool ==()
+}
+
+"hive::hive.dart::TypeAdapter" <|-- "instafake_flutter::core::data::models::post_thumbnail_model.dart::PostThumbnailModelAdapter"
+
+class "instafake_flutter::core::data::models::suggestion_model.dart::SuggestionModel" {
+  +String suggestion
+  +DateTime lastUpdated
+  +int count
+}
+
+class "instafake_flutter::core::data::models::suggestion_model.dart::SuggestionModelAdapter" {
+  +int typeId
+  +int hashCode
+  +SuggestionModel read()
+  +void write()
+  +bool ==()
+}
+
+"hive::hive.dart::TypeAdapter" <|-- "instafake_flutter::core::data::models::suggestion_model.dart::SuggestionModelAdapter"
+
+class "instafake_flutter::core::data::models::user_model.dart::UserModel" {
+  +int id
+  +String token
+  +String username
+  +String realname
+  +String email
+  +String? profImageUrl
+  +String? bio
+  +String? fileName
+  +DateTime createdAt
+  {static} +dynamic fromJsonList()
+  +Map<String, dynamic> toJson()
+}
+
+"hive::src::object::hive_object.dart::HiveObject" <|-- "instafake_flutter::core::data::models::user_model.dart::UserModel"
+
+class "instafake_flutter::core::data::models::user_model.dart::UserModelAdapter" {
+  +int typeId
+  +int hashCode
+  +UserModel read()
+  +void write()
+  +bool ==()
+}
+
+"hive::hive.dart::TypeAdapter" <|-- "instafake_flutter::core::data::models::user_model.dart::UserModelAdapter"
+
+class "instafake_flutter::core::data::sources::local_post_model_data_source.dart::LocalPostModelDataSource" {
+  -Client _httpClient
+  +Box<PostModel> postMetadataBox
+  +Box<PostThumbnailModel> postThumbnailMetadataBox
+  +dynamic savePostMetadata()
+  +dynamic savePostThumbnailMetadata()
+}
+
+"instafake_flutter::core::data::sources::local_post_model_data_source.dart::LocalPostModelDataSource" o-- "http::src::client.dart::Client"
+"instafake_flutter::core::data::sources::local_post_model_data_source.dart::LocalPostModelDataSource" o-- "hive::hive.dart::Box<PostModel>"
+"instafake_flutter::core::data::sources::local_post_model_data_source.dart::LocalPostModelDataSource" o-- "hive::hive.dart::Box<PostThumbnailModel>"
+
+class "instafake_flutter::core::data::sources::local_user_model_data_source.dart::LocalUserModelDataSource" {
+  +Box<UserModel> userMetadataBox
+  +Box<SuggestionModel> suggestionsBox
+  +dynamic saveUserMetadata()
+  +UserModel? getUserMetadata()
+  +dynamic clearUserMetadata()
+  +dynamic saveSuggestions()
+}
+
+"instafake_flutter::core::data::sources::local_user_model_data_source.dart::LocalUserModelDataSource" o-- "hive::hive.dart::Box<UserModel>"
+"instafake_flutter::core::data::sources::local_user_model_data_source.dart::LocalUserModelDataSource" o-- "hive::hive.dart::Box<SuggestionModel>"
+
+class "instafake_flutter::core::data::sources::remote_post_model_data_source.dart::RemotePostModelDataSource" {
+  -Client _httpClient
+  -String _baseUrl
+  -String _token
+  +dynamic createPost()
+  +dynamic getExplore()
+  +dynamic getTimeline()
+  +dynamic addComment()
+  +dynamic likePost()
+  +dynamic unlikePost()
+}
+
+"instafake_flutter::core::data::sources::remote_post_model_data_source.dart::RemotePostModelDataSource" o-- "http::src::client.dart::Client"
+
+class "instafake_flutter::core::data::sources::remote_story_model_data_source.dart::RemoteStoryModelDataSource" {
+  -String _token
+  -Client _client
+  +dynamic createStory()
+  +dynamic getStories()
+}
+
+"instafake_flutter::core::data::sources::remote_story_model_data_source.dart::RemoteStoryModelDataSource" o-- "http::src::client.dart::Client"
+
+class "instafake_flutter::core::data::sources::remote_user_model_data_source.dart::RemoteUserModelDataSource" {
+  -Client _client
+  -String _token
+  +dynamic login()
+  +dynamic register()
+  +dynamic searchUser()
+  +dynamic getMyProfile()
+  +dynamic followUser()
+  +dynamic unfollowUser()
+  +dynamic removeUser()
+}
+
+"instafake_flutter::core::data::sources::remote_user_model_data_source.dart::RemoteUserModelDataSource" o-- "http::src::client.dart::Client"
+
+class "instafake_flutter::core::domain::dto::comment_request.dart::CommentRequest" {
+  +String comment
+  +String username
+  +Map<String, dynamic> toJson()
+}
+
+class "instafake_flutter::core::domain::dto::create_post_request.dart::CreatePostRequest" {
+  +String username
+  +String caption
+}
+
+class "instafake_flutter::core::domain::dto::follow_request.dart::FollowRequest" {
+  +int id
+  +int otherId
+  +Map<String, dynamic> toJson()
+}
+
+class "instafake_flutter::core::domain::dto::like_request.dart::LikeRequest" {
+  +String userId
+  +String postId
+  +dynamic toJson()
+}
+
+class "instafake_flutter::core::domain::dto::profile_response.dart::ProfileResponse" {
+  +int id
+  +String username
+  +String? profImageUrl
+  +String? name
+  +String? bio
+  +List<int> followers
+  +List<int> followings
+  +List<PostThumbnailModel>? thumbnails
+  {static} +dynamic fromJsonList()
+}
+
+class "instafake_flutter::core::domain::dto::story_response.dart::StoryResponse" {
+  +int storyId
+  +String storyUrl
+  +String storyAuthor
+  +int authorId
+  +DateTime createdAt
+  {static} +dynamic fromJsonList()
+}
+
+class "instafake_flutter::core::domain::dto::user_response.dart::UserResponse" {
+  +String username
+  +String? name
+  +String? profImageUrl
+  +int id
+  +String? bio
+  {static} +dynamic fromJsonList()
+}
+
+abstract class "instafake_flutter::core::domain::repos::post_model_repository.dart::PostModelRepository" {
+  +dynamic createPost()
+  +dynamic getPost()
+  +dynamic getExplore()
+  +dynamic getTimeline()
+  +dynamic deletePost()
+  +dynamic addComment()
+  +dynamic addLike()
+  +dynamic removeLike()
+}
+
+class "instafake_flutter::core::domain::repos::post_model_repository.dart::PostModelRepositoryImpl" {
+  -RemotePostModelDataSource _remoteDataSource
+  -LocalPostModelDataSource _localDataSource
+  +dynamic createPost()
+  +dynamic deletePost()
+  +dynamic getExplore()
+  +dynamic getPost()
+  +dynamic getTimeline()
+  +dynamic addComment()
+  +dynamic addLike()
+  +dynamic removeLike()
+}
+
+"instafake_flutter::core::domain::repos::post_model_repository.dart::PostModelRepositoryImpl" o-- "instafake_flutter::core::data::sources::remote_post_model_data_source.dart::RemotePostModelDataSource"
+"instafake_flutter::core::domain::repos::post_model_repository.dart::PostModelRepositoryImpl" o-- "instafake_flutter::core::data::sources::local_post_model_data_source.dart::LocalPostModelDataSource"
+"instafake_flutter::core::domain::repos::post_model_repository.dart::PostModelRepository" <|-- "instafake_flutter::core::domain::repos::post_model_repository.dart::PostModelRepositoryImpl"
+
+abstract class "instafake_flutter::core::domain::repos::story_model_repository.dart::StoryModelRepository" {
+  +dynamic getStories()
+  +dynamic createStory()
+}
+
+class "instafake_flutter::core::domain::repos::story_model_repository.dart::StoryModelRepositoryImple" {
+  -RemoteStoryModelDataSource _remoteDataSource
+  +dynamic createStory()
+  +dynamic getStories()
+}
+
+"instafake_flutter::core::domain::repos::story_model_repository.dart::StoryModelRepositoryImple" o-- "instafake_flutter::core::data::sources::remote_story_model_data_source.dart::RemoteStoryModelDataSource"
+"instafake_flutter::core::domain::repos::story_model_repository.dart::StoryModelRepository" <|-- "instafake_flutter::core::domain::repos::story_model_repository.dart::StoryModelRepositoryImple"
+
+abstract class "instafake_flutter::core::domain::repos::user_model_repository.dart::UserModelRepository" {
+  +dynamic login()
+  +dynamic getLocalData()
+  +dynamic register()
+  +dynamic searchUser()
+  +dynamic logout()
+  +dynamic getProfile()
+  +dynamic followUser()
+  +dynamic unfollowUser()
+  +dynamic removeUser()
+}
+
+class "instafake_flutter::core::domain::repos::user_model_repository.dart::UserModelRepositoryImpl" {
+  -RemoteUserModelDataSource _remoteDataSource
+  -LocalUserModelDataSource _localDataSource
+  +dynamic login()
+  +dynamic register()
+  +dynamic getLocalData()
+  +dynamic logout()
+  +dynamic searchUser()
+  +dynamic getProfile()
+  +dynamic followUser()
+  +dynamic removeUser()
+  +dynamic unfollowUser()
+}
+
+"instafake_flutter::core::domain::repos::user_model_repository.dart::UserModelRepositoryImpl" o-- "instafake_flutter::core::data::sources::remote_user_model_data_source.dart::RemoteUserModelDataSource"
+"instafake_flutter::core::domain::repos::user_model_repository.dart::UserModelRepositoryImpl" o-- "instafake_flutter::core::data::sources::local_user_model_data_source.dart::LocalUserModelDataSource"
+"instafake_flutter::core::domain::repos::user_model_repository.dart::UserModelRepository" <|-- "instafake_flutter::core::domain::repos::user_model_repository.dart::UserModelRepositoryImpl"
+
+class "instafake_flutter::core::domain::usecases::login_usecase.dart::LoginUseCase" {
+  +UserModelRepository repository
+  +dynamic login()
+}
+
+"instafake_flutter::core::domain::usecases::login_usecase.dart::LoginUseCase" o-- "instafake_flutter::core::domain::repos::user_model_repository.dart::UserModelRepository"
+
+class "instafake_flutter::core::presentation::auth::auth_screen.dart::AuthScreen" {
+  +TextEditingController nameEditingController
+  +TextEditingController usernameEditingController
+  +TextEditingController emailEditController
+  +TextEditingController emailConfirmEditController
+  +TextEditingController passwordEditController
+  +TextEditingController passwordConfirmController
+  +Widget build()
+}
+
+"instafake_flutter::core::presentation::auth::auth_screen.dart::AuthScreen" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "instafake_flutter::core::presentation::auth::auth_screen.dart::AuthScreen"
+
+class "instafake_flutter::core::presentation::camera::camera_gallery_screen.dart::CameraGalleryScreen" {
+  +State<CameraGalleryScreen> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "instafake_flutter::core::presentation::camera::camera_gallery_screen.dart::CameraGalleryScreen"
+
+class "instafake_flutter::core::presentation::camera::camera_gallery_screen.dart::_CameraGalleryScreenState" {
+  +void initState()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "instafake_flutter::core::presentation::camera::camera_gallery_screen.dart::_CameraGalleryScreenState"
+
+class "instafake_flutter::core::presentation::camera::camera_screen.dart::CameraScreen" {
+  +State<CameraScreen> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "instafake_flutter::core::presentation::camera::camera_screen.dart::CameraScreen"
+
+class "instafake_flutter::core::presentation::camera::camera_screen.dart::_CameraScreenState" {
+  +void initState()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "instafake_flutter::core::presentation::camera::camera_screen.dart::_CameraScreenState"
+
+class "instafake_flutter::core::presentation::camera::camera_story_confirmation.dart::ConfirmUploadPage" {
+  +String imagePath
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "instafake_flutter::core::presentation::camera::camera_story_confirmation.dart::ConfirmUploadPage"
+
+class "instafake_flutter::core::presentation::home::home_explore_screen.dart::HomeExploreScreen" {
+  +HomeProvider provider
+  +State<HomeExploreScreen> createState()
+}
+
+"instafake_flutter::core::presentation::home::home_explore_screen.dart::HomeExploreScreen" o-- "instafake_flutter::core::providers::home_provider.dart::HomeProvider"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "instafake_flutter::core::presentation::home::home_explore_screen.dart::HomeExploreScreen"
+
+class "instafake_flutter::core::presentation::home::home_explore_screen.dart::_HomeExploreScreenState" {
+  +TextEditingController searchTextController
+  +void initState()
+  +Widget build()
+}
+
+"instafake_flutter::core::presentation::home::home_explore_screen.dart::_HomeExploreScreenState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter::src::widgets::framework.dart::State" <|-- "instafake_flutter::core::presentation::home::home_explore_screen.dart::_HomeExploreScreenState"
+
+class "instafake_flutter::core::presentation::home::home_post_detail_screen.dart::HomePostDetailScreen" {
+  +PostModel post
+  +State<HomePostDetailScreen> createState()
+}
+
+"instafake_flutter::core::presentation::home::home_post_detail_screen.dart::HomePostDetailScreen" o-- "instafake_flutter::core::data::models::post_model.dart::PostModel"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "instafake_flutter::core::presentation::home::home_post_detail_screen.dart::HomePostDetailScreen"
+
+class "instafake_flutter::core::presentation::home::home_post_detail_screen.dart::_HomePostDetailScreenState" {
+  +UserModel? userData
+  -ScrollController _scrollController
+  +Widget build()
+}
+
+"instafake_flutter::core::presentation::home::home_post_detail_screen.dart::_HomePostDetailScreenState" o-- "instafake_flutter::core::data::models::user_model.dart::UserModel"
+"instafake_flutter::core::presentation::home::home_post_detail_screen.dart::_HomePostDetailScreenState" o-- "flutter::src::widgets::scroll_controller.dart::ScrollController"
+"flutter::src::widgets::framework.dart::State" <|-- "instafake_flutter::core::presentation::home::home_post_detail_screen.dart::_HomePostDetailScreenState"
+
+class "instafake_flutter::core::presentation::home::home_post_screen.dart::HomePostScreen" {
+  +HomeProvider provider
+  +Widget build()
+}
+
+"instafake_flutter::core::presentation::home::home_post_screen.dart::HomePostScreen" o-- "instafake_flutter::core::providers::home_provider.dart::HomeProvider"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "instafake_flutter::core::presentation::home::home_post_screen.dart::HomePostScreen"
+
+class "instafake_flutter::core::presentation::home::home_profile_screen.dart::HomeProfileScreen" {
+  +State<HomeProfileScreen> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "instafake_flutter::core::presentation::home::home_profile_screen.dart::HomeProfileScreen"
+
+class "instafake_flutter::core::presentation::home::home_profile_screen.dart::_HomeProfileScreenState" {
+  +void initState()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "instafake_flutter::core::presentation::home::home_profile_screen.dart::_HomeProfileScreenState"
+
+class "instafake_flutter::core::presentation::home::home_screen.dart::HomeScreen" {
+  +State<HomeScreen> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "instafake_flutter::core::presentation::home::home_screen.dart::HomeScreen"
+
+class "instafake_flutter::core::presentation::home::home_screen.dart::_HomeScreenState" {
+  +UserDataService userService
+  -AnimationController _controller
+  -Animation<Offset> _offsetAnimation
+  +void initState()
+  +Widget build()
+  -Widget _buildBody()
+}
+
+"instafake_flutter::core::presentation::home::home_screen.dart::_HomeScreenState" o-- "instafake_flutter::services::user_data_service.dart::UserDataService"
+"instafake_flutter::core::presentation::home::home_screen.dart::_HomeScreenState" o-- "flutter::src::animation::animation_controller.dart::AnimationController"
+"instafake_flutter::core::presentation::home::home_screen.dart::_HomeScreenState" o-- "flutter::src::animation::animation.dart::Animation<Offset>"
+"flutter::src::widgets::framework.dart::State" <|-- "instafake_flutter::core::presentation::home::home_screen.dart::_HomeScreenState"
+"flutter::src::widgets::ticker_provider.dart::SingleTickerProviderStateMixin" <|-- "instafake_flutter::core::presentation::home::home_screen.dart::_HomeScreenState"
+
+class "instafake_flutter::core::presentation::home::home_search_screen.dart::HomeSearchScreen" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "instafake_flutter::core::presentation::home::home_search_screen.dart::HomeSearchScreen"
+
+class "instafake_flutter::core::presentation::home::home_timeline_screen.dart::HomeTimelineScreen" {
+  +HomeProvider provider
+  +UserModel? userData
+  +State<HomeTimelineScreen> createState()
+}
+
+"instafake_flutter::core::presentation::home::home_timeline_screen.dart::HomeTimelineScreen" o-- "instafake_flutter::core::providers::home_provider.dart::HomeProvider"
+"instafake_flutter::core::presentation::home::home_timeline_screen.dart::HomeTimelineScreen" o-- "instafake_flutter::core::data::models::user_model.dart::UserModel"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "instafake_flutter::core::presentation::home::home_timeline_screen.dart::HomeTimelineScreen"
+
+class "instafake_flutter::core::presentation::home::home_timeline_screen.dart::_HomeTimelineScreenState" {
+  +UserModel userData
+  +void initState()
+  -dynamic _fetchData()
+  +Widget build()
+}
+
+"instafake_flutter::core::presentation::home::home_timeline_screen.dart::_HomeTimelineScreenState" o-- "instafake_flutter::core::data::models::user_model.dart::UserModel"
+"flutter::src::widgets::framework.dart::State" <|-- "instafake_flutter::core::presentation::home::home_timeline_screen.dart::_HomeTimelineScreenState"
+
+class "instafake_flutter::core::presentation::profile::profile_user_screen.dart::ProfileUserScreen" {
+  +String username
+  +State<ProfileUserScreen> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "instafake_flutter::core::presentation::profile::profile_user_screen.dart::ProfileUserScreen"
+
+class "instafake_flutter::core::presentation::profile::profile_user_screen.dart::_ProfileUserScreenState" {
+  +UserModel userData
+  +void initState()
+  +Widget build()
+}
+
+"instafake_flutter::core::presentation::profile::profile_user_screen.dart::_ProfileUserScreenState" o-- "instafake_flutter::core::data::models::user_model.dart::UserModel"
+"flutter::src::widgets::framework.dart::State" <|-- "instafake_flutter::core::presentation::profile::profile_user_screen.dart::_ProfileUserScreenState"
+
+class "instafake_flutter::core::presentation::test::test.dart::ExpandableListView" {
+  +_ExpandableListViewState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "instafake_flutter::core::presentation::test::test.dart::ExpandableListView"
+
+class "instafake_flutter::core::presentation::test::test.dart::_ExpandableListViewState" {
+  -int? _currentlyExpandedIndex
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "instafake_flutter::core::presentation::test::test.dart::_ExpandableListViewState"
+
+class "instafake_flutter::core::providers::auth_provider.dart::AuthProvider" {
+  -UserModelRepository _userModelRepository
+  +EntryState state
+  +UserModel? user
+  +ValueNotifier<String?> emailErrorNotifier
+  +ValueNotifier<String?> passwordErrorNotifier
+  +void changeEmailErrorNotifierValue()
+  +void changePasswordErrorNotifierValue()
+  +void changeUsername()
+  +void changeEntryState()
+  +dynamic commitEmailRegistration()
+  +dynamic commitEmailLogin()
+  +dynamic getMetadata()
+}
+
+"instafake_flutter::core::providers::auth_provider.dart::AuthProvider" o-- "instafake_flutter::core::domain::repos::user_model_repository.dart::UserModelRepository"
+"instafake_flutter::core::providers::auth_provider.dart::AuthProvider" o-- "instafake_flutter::utils::enums::entry_state.dart::EntryState"
+"instafake_flutter::core::providers::auth_provider.dart::AuthProvider" o-- "instafake_flutter::core::data::models::user_model.dart::UserModel"
+"instafake_flutter::core::providers::auth_provider.dart::AuthProvider" o-- "flutter::src::foundation::change_notifier.dart::ValueNotifier<String>"
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "instafake_flutter::core::providers::auth_provider.dart::AuthProvider"
+
+class "instafake_flutter::core::providers::camera_provider.dart::CameraProvider" {
+  -PostModelRepository _postRepo
+  -StoryModelRepository _storyRepo
+  -String _imagePath
+  +UserModel userData
+  +List<CameraDescription> cameras
+  +TextEditingController captionEditController
+  +int cameraIndex
+  +CameraController? controller
+  +bool isLoading
+  +bool isImageLoading
+  +List<AssetEntity> assets
+  +List<AssetPathEntity> albums
+  +int selectedAlbumIndex
+  +int pageIndex
+  -AssetEntity? _selectedAsset
+  +String pathToStory
+  +File storyFile
+  +String imagePath
+  +dynamic selectedFile
+  +void setImage()
+  +dynamic initializeCamera()
+  +void changeCamera()
+  +dynamic savePicture()
+  +dynamic uploadStory()
+  +dynamic fetchGalleryAndAlbums()
+  +dynamic selectAlbum()
+  +void chooseAsset()
+  +void togglePageIndex()
+  +dynamic createPost()
+}
+
+"instafake_flutter::core::providers::camera_provider.dart::CameraProvider" o-- "instafake_flutter::core::domain::repos::post_model_repository.dart::PostModelRepository"
+"instafake_flutter::core::providers::camera_provider.dart::CameraProvider" o-- "instafake_flutter::core::domain::repos::story_model_repository.dart::StoryModelRepository"
+"instafake_flutter::core::providers::camera_provider.dart::CameraProvider" o-- "instafake_flutter::core::data::models::user_model.dart::UserModel"
+"instafake_flutter::core::providers::camera_provider.dart::CameraProvider" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"instafake_flutter::core::providers::camera_provider.dart::CameraProvider" o-- "camera::src::camera_controller.dart::CameraController"
+"instafake_flutter::core::providers::camera_provider.dart::CameraProvider" o-- "photo_manager::src::types::entity.dart::AssetEntity"
+"instafake_flutter::core::providers::camera_provider.dart::CameraProvider" o-- "dart::io::File"
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "instafake_flutter::core::providers::camera_provider.dart::CameraProvider"
+
+class "instafake_flutter::core::providers::home_provider.dart::HomeProvider" {
+  -PostModelRepository _postRepo
+  -UserModelRepository _userRepo
+  -StoryModelRepository _storyRepo
+  +TextEditingController searchController
+  -List<PostModel> _posts
+  -List<PostThumbnailModel> _explorePosts
+  -List<PostThumbnailModel> _profilePosts
+  -List<StoryResponse> _stories
+  -List<UserResponse> _searchedUsers
+  +ScrollController scrollController
+  +UserModel user
+  +TextEditingController commentEditingController
+  +PostModel? currentPost
+  -int _timelinePage
+  -int _timelinePageSize
+  -int _explorePage
+  -int _explorePageSize
+  -bool _isLoading
+  -bool _hasMore
+  -int _index
+  +List<bool> isExpanded
+  -String _mediaPath
+  +ProfileResponse myProfile
+  +List<PostModel> posts
+  +List<PostThumbnailModel> explorePosts
+  +List<PostThumbnailModel> profilePosts
+  +List<UserResponse> searchedUsers
+  +List<StoryResponse> stories
+  +bool isLoading
+  +bool hasMore
+  +int index
+  +String mediaPth
+  +dynamic commitLogout()
+  +dynamic getMyProfile()
+  +dynamic getTimeline()
+  +dynamic getStories()
+  +dynamic getFile()
+  +dynamic searchUsers()
+  +dynamic getExplore()
+  +dynamic getMoreExplore()
+  -void _scrollListener()
+  +void changeIndex()
+  +void setMedia()
+  +dynamic addComment()
+  +dynamic addLike()
+  +dynamic removeLike()
+  +void toggleCommentExpansion()
+  +void toggleCaptionExpansion()
+}
+
+"instafake_flutter::core::providers::home_provider.dart::HomeProvider" o-- "instafake_flutter::core::domain::repos::post_model_repository.dart::PostModelRepository"
+"instafake_flutter::core::providers::home_provider.dart::HomeProvider" o-- "instafake_flutter::core::domain::repos::user_model_repository.dart::UserModelRepository"
+"instafake_flutter::core::providers::home_provider.dart::HomeProvider" o-- "instafake_flutter::core::domain::repos::story_model_repository.dart::StoryModelRepository"
+"instafake_flutter::core::providers::home_provider.dart::HomeProvider" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"instafake_flutter::core::providers::home_provider.dart::HomeProvider" o-- "flutter::src::widgets::scroll_controller.dart::ScrollController"
+"instafake_flutter::core::providers::home_provider.dart::HomeProvider" o-- "instafake_flutter::core::data::models::user_model.dart::UserModel"
+"instafake_flutter::core::providers::home_provider.dart::HomeProvider" o-- "instafake_flutter::core::data::models::post_model.dart::PostModel"
+"instafake_flutter::core::providers::home_provider.dart::HomeProvider" o-- "instafake_flutter::core::domain::dto::profile_response.dart::ProfileResponse"
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "instafake_flutter::core::providers::home_provider.dart::HomeProvider"
+
+class "instafake_flutter::core::providers::profile_provider.dart::ProfileProvider" {
+  -bool _isLoading
+  -bool _isFollowLoading
+  -bool _isFollowed
+  -bool _isFollower
+  -UserModelRepository _userRepo
+  +ProfileResponse userProfile
+  +bool isLoading
+  +bool isFollowLoading
+  +bool isFollower
+  +bool isFollowing
+  +dynamic getUserProfile()
+  +dynamic follow()
+  +dynamic unfollow()
+  +dynamic removeFollower()
+}
+
+"instafake_flutter::core::providers::profile_provider.dart::ProfileProvider" o-- "instafake_flutter::core::domain::repos::user_model_repository.dart::UserModelRepository"
+"instafake_flutter::core::providers::profile_provider.dart::ProfileProvider" o-- "instafake_flutter::core::domain::dto::profile_response.dart::ProfileResponse"
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "instafake_flutter::core::providers::profile_provider.dart::ProfileProvider"
+
+class "instafake_flutter::dependency_injection.dart::DependencyInjection" {
+  {static} +dynamic init()
+  {static} +dynamic requestPermissions()
+  {static} +dynamic autoCleanCachedMedias()
+  {static} +bool isJwtExpired()
+}
+
+class "instafake_flutter::main.dart::InstafakeApp" {
+  +bool isLogin
+  +DeviceStatusService accountService
+  +Widget build()
+}
+
+"instafake_flutter::main.dart::InstafakeApp" o-- "instafake_flutter::services::account_service.dart::DeviceStatusService"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "instafake_flutter::main.dart::InstafakeApp"
+
+class "instafake_flutter::services::account_service.dart::DeviceStatusService" {
+  +RxBool isLogin
+  +RxBool permissionsGranted
+  +CameraController controller
+  +List<CameraDescription> cameras
+  +bool isAdmin
+  +dynamic onInit()
+}
+
+"instafake_flutter::services::account_service.dart::DeviceStatusService" o-- "get::get_rx::src::rx_types::rx_types.dart::RxBool"
+"instafake_flutter::services::account_service.dart::DeviceStatusService" o-- "camera::src::camera_controller.dart::CameraController"
+"get::get_state_manager::src::rx_flutter::rx_disposable.dart::GetxService" <|-- "instafake_flutter::services::account_service.dart::DeviceStatusService"
+
+class "instafake_flutter::services::connectivity_service.dart::ConnectivityProvider" {
+  -WebSocketChannel _channel
+  -ConnectivityStatus _status
+  -bool _isConnected
+  +ConnectivityStatus status
+  +bool isConnected
+  -void _getNetworkStatus()
+  -void _connectToWSS()
+  +void dispose()
+}
+
+"instafake_flutter::services::connectivity_service.dart::ConnectivityProvider" o-- "web_socket_channel::src::channel.dart::WebSocketChannel"
+"instafake_flutter::services::connectivity_service.dart::ConnectivityProvider" o-- "instafake_flutter::services::connectivity_service.dart::ConnectivityStatus"
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "instafake_flutter::services::connectivity_service.dart::ConnectivityProvider"
+
+class "instafake_flutter::services::connectivity_service.dart::ConnectivityStatus" {
+  +int index
+  {static} +List<ConnectivityStatus> values
+  {static} +ConnectivityStatus connected
+  {static} +ConnectivityStatus disconnected
+}
+
+"instafake_flutter::services::connectivity_service.dart::ConnectivityStatus" o-- "instafake_flutter::services::connectivity_service.dart::ConnectivityStatus"
+"dart::core::Enum" <|-- "instafake_flutter::services::connectivity_service.dart::ConnectivityStatus"
+
+class "instafake_flutter::services::user_data_service.dart::UserDataService" {
+  +UserModel? userModel
+  +Box<UserModel> userDataBox
+  +void onInit()
+}
+
+"instafake_flutter::services::user_data_service.dart::UserDataService" o-- "instafake_flutter::core::data::models::user_model.dart::UserModel"
+"instafake_flutter::services::user_data_service.dart::UserDataService" o-- "hive::hive.dart::Box<UserModel>"
+"get::get_state_manager::src::rx_flutter::rx_disposable.dart::GetxService" <|-- "instafake_flutter::services::user_data_service.dart::UserDataService"
+
+class "instafake_flutter::utils::enums::entry_state.dart::EntryState" {
+  +int index
+  {static} +List<EntryState> values
+  {static} +EntryState register
+  {static} +EntryState login
+}
+
+"instafake_flutter::utils::enums::entry_state.dart::EntryState" o-- "instafake_flutter::utils::enums::entry_state.dart::EntryState"
+"dart::core::Enum" <|-- "instafake_flutter::utils::enums::entry_state.dart::EntryState"
+
+class "instafake_flutter::utils::log.dart::Log" {
+  {static} +void red()
+  {static} +void green()
+  {static} +void yellow()
+  {static} +void cyan()
+  {static} +void pink()
+}
+
+class "instafake_flutter::utils::theme.dart::MaterialTheme" {
+  +TextTheme textTheme
+  +List<ExtendedColor> extendedColors
+  {static} +MaterialScheme lightScheme()
+  +ThemeData light()
+  {static} +MaterialScheme lightMediumContrastScheme()
+  +ThemeData lightMediumContrast()
+  {static} +MaterialScheme lightHighContrastScheme()
+  +ThemeData lightHighContrast()
+  {static} +MaterialScheme darkScheme()
+  +ThemeData dark()
+  {static} +MaterialScheme darkMediumContrastScheme()
+  +ThemeData darkMediumContrast()
+  {static} +MaterialScheme darkHighContrastScheme()
+  +ThemeData darkHighContrast()
+  +ThemeData theme()
+}
+
+"instafake_flutter::utils::theme.dart::MaterialTheme" o-- "flutter::src::material::text_theme.dart::TextTheme"
+
+class "instafake_flutter::utils::theme.dart::MaterialScheme" {
+  +Brightness brightness
+  +Color primary
+  +Color surfaceTint
+  +Color onPrimary
+  +Color primaryContainer
+  +Color onPrimaryContainer
+  +Color secondary
+  +Color onSecondary
+  +Color secondaryContainer
+  +Color onSecondaryContainer
+  +Color tertiary
+  +Color onTertiary
+  +Color tertiaryContainer
+  +Color onTertiaryContainer
+  +Color error
+  +Color onError
+  +Color errorContainer
+  +Color onErrorContainer
+  +Color background
+  +Color onBackground
+  +Color surface
+  +Color onSurface
+  +Color surfaceVariant
+  +Color onSurfaceVariant
+  +Color outline
+  +Color outlineVariant
+  +Color shadow
+  +Color scrim
+  +Color inverseSurface
+  +Color inverseOnSurface
+  +Color inversePrimary
+  +Color primaryFixed
+  +Color onPrimaryFixed
+  +Color primaryFixedDim
+  +Color onPrimaryFixedVariant
+  +Color secondaryFixed
+  +Color onSecondaryFixed
+  +Color secondaryFixedDim
+  +Color onSecondaryFixedVariant
+  +Color tertiaryFixed
+  +Color onTertiaryFixed
+  +Color tertiaryFixedDim
+  +Color onTertiaryFixedVariant
+  +Color surfaceDim
+  +Color surfaceBright
+  +Color surfaceContainerLowest
+  +Color surfaceContainerLow
+  +Color surfaceContainer
+  +Color surfaceContainerHigh
+  +Color surfaceContainerHighest
+}
+
+"instafake_flutter::utils::theme.dart::MaterialScheme" o-- "dart::ui::Brightness"
+"instafake_flutter::utils::theme.dart::MaterialScheme" o-- "dart::ui::Color"
+
+class "instafake_flutter::utils::theme.dart::ExtendedColor" {
+  +Color seed
+  +Color value
+  +ColorFamily light
+  +ColorFamily lightHighContrast
+  +ColorFamily lightMediumContrast
+  +ColorFamily dark
+  +ColorFamily darkHighContrast
+  +ColorFamily darkMediumContrast
+}
+
+"instafake_flutter::utils::theme.dart::ExtendedColor" o-- "dart::ui::Color"
+"instafake_flutter::utils::theme.dart::ExtendedColor" o-- "instafake_flutter::utils::theme.dart::ColorFamily"
+
+class "instafake_flutter::utils::theme.dart::ColorFamily" {
+  +Color color
+  +Color onColor
+  +Color colorContainer
+  +Color onColorContainer
+}
+
+"instafake_flutter::utils::theme.dart::ColorFamily" o-- "dart::ui::Color"
+
+class "instafake_flutter::widgets::bottom_nav_bar.dart::BottomNavBar" {
+  +List<BottomNavigationBarItem> items
+  +int index
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "instafake_flutter::widgets::bottom_nav_bar.dart::BottomNavBar"
+
+class "instafake_flutter::widgets::caption_widget.dart::CaptionWidget" {
+  +String username
+  +String caption
+  +void Function(String) onUsernameTap
+  +int? maxLines
+  +Widget build()
+}
+
+"instafake_flutter::widgets::caption_widget.dart::CaptionWidget" o-- "null::void Function(String)"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "instafake_flutter::widgets::caption_widget.dart::CaptionWidget"
+
+class "instafake_flutter::widgets::custom_card_widget.dart::CustomCardWidget" {
+  +Widget child
+  +Widget build()
+}
+
+"instafake_flutter::widgets::custom_card_widget.dart::CustomCardWidget" o-- "flutter::src::widgets::framework.dart::Widget"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "instafake_flutter::widgets::custom_card_widget.dart::CustomCardWidget"
+
+class "instafake_flutter::widgets::custom_loading_widget.dart::CustomLoadingWidget" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "instafake_flutter::widgets::custom_loading_widget.dart::CustomLoadingWidget"
+
+class "instafake_flutter::widgets::custom_search_delegate.dart::CustomSearchDelegate" {
+  +String query
+  +List<Widget> buildActions()
+  +Widget buildLeading()
+  +Widget buildResults()
+  +Widget buildSuggestions()
+}
+
+"flutter::src::material::search.dart::SearchDelegate" <|-- "instafake_flutter::widgets::custom_search_delegate.dart::CustomSearchDelegate"
+
+class "instafake_flutter::widgets::custom_text_field.dart::CustomTextField" {
+  +String? labelText
+  +String? hintText
+  +TextEditingController controller
+  +bool obscureText
+  +dynamic Function(String)? onChanged
+  +dynamic Function(String)? onSubmitted
+  +ValueNotifier<String?>? errorNotifier
+  +TextInputType? keyboardType
+  +Color? color
+  +Widget? prefix
+  +int? maxLines
+  +bool? filled
+  +Widget build()
+}
+
+"instafake_flutter::widgets::custom_text_field.dart::CustomTextField" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"instafake_flutter::widgets::custom_text_field.dart::CustomTextField" o-- "null::dynamic Function(String)"
+"instafake_flutter::widgets::custom_text_field.dart::CustomTextField" o-- "flutter::src::foundation::change_notifier.dart::ValueNotifier<String>"
+"instafake_flutter::widgets::custom_text_field.dart::CustomTextField" o-- "flutter::src::services::text_input.dart::TextInputType"
+"instafake_flutter::widgets::custom_text_field.dart::CustomTextField" o-- "dart::ui::Color"
+"instafake_flutter::widgets::custom_text_field.dart::CustomTextField" o-- "flutter::src::widgets::framework.dart::Widget"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "instafake_flutter::widgets::custom_text_field.dart::CustomTextField"
+
+class "instafake_flutter::widgets::empty_timeline_notice.dart::EmptyTimelineNotice" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "instafake_flutter::widgets::empty_timeline_notice.dart::EmptyTimelineNotice"
+
+class "instafake_flutter::widgets::entry_form.dart::EntryForm" {
+  +TextEditingController nameEditingController
+  +TextEditingController usernameEditingController
+  +TextEditingController emailEditController
+  +TextEditingController emailConfirmEditController
+  +TextEditingController passwordEditController
+  +TextEditingController passwordConfirmController
+  +EntryState state
+  +BuildContext context
+  +Widget build()
+}
+
+"instafake_flutter::widgets::entry_form.dart::EntryForm" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"instafake_flutter::widgets::entry_form.dart::EntryForm" o-- "instafake_flutter::utils::enums::entry_state.dart::EntryState"
+"instafake_flutter::widgets::entry_form.dart::EntryForm" o-- "flutter::src::widgets::framework.dart::BuildContext"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "instafake_flutter::widgets::entry_form.dart::EntryForm"
+
+class "instafake_flutter::widgets::gallery_thumbnail.dart::GalleryThumbnail" {
+  +AssetEntity asset
+  +void Function() onTap
+  +Widget build()
+}
+
+"instafake_flutter::widgets::gallery_thumbnail.dart::GalleryThumbnail" o-- "photo_manager::src::types::entity.dart::AssetEntity"
+"instafake_flutter::widgets::gallery_thumbnail.dart::GalleryThumbnail" o-- "null::void Function()"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "instafake_flutter::widgets::gallery_thumbnail.dart::GalleryThumbnail"
+
+class "instafake_flutter::widgets::media_widget.dart::MediaWidget" {
+  +File file
+  +MediaWidgetState createState()
+}
+
+"instafake_flutter::widgets::media_widget.dart::MediaWidget" o-- "dart::io::File"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "instafake_flutter::widgets::media_widget.dart::MediaWidget"
+
+class "instafake_flutter::widgets::media_widget.dart::MediaWidgetState" {
+  -VideoPlayerController? _controller
+  +void initState()
+  +void dispose()
+  +bool isVideo()
+  +Widget build()
+}
+
+"instafake_flutter::widgets::media_widget.dart::MediaWidgetState" o-- "video_player::video_player.dart::VideoPlayerController"
+"flutter::src::widgets::framework.dart::State" <|-- "instafake_flutter::widgets::media_widget.dart::MediaWidgetState"
+
+class "instafake_flutter::widgets::post_image_widget.dart::PostImageWidget" {
+  +String url
+  +double width
+  +double height
+  +BoxFit? fit
+  +Widget build()
+}
+
+"instafake_flutter::widgets::post_image_widget.dart::PostImageWidget" o-- "flutter::src::painting::box_fit.dart::BoxFit"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "instafake_flutter::widgets::post_image_widget.dart::PostImageWidget"
+
+class "instafake_flutter::widgets::profile_bar.dart::ProfileBar" {
+  +bool isMe
+  +bool? isFollowed
+  +void Function()? logout
+  +void Function()? editProfile
+  +void Function()? follow
+  +void Function()? unfollow
+  +Widget build()
+}
+
+"instafake_flutter::widgets::profile_bar.dart::ProfileBar" o-- "null::void Function()"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "instafake_flutter::widgets::profile_bar.dart::ProfileBar"
+
+class "instafake_flutter::widgets::profile_counts_widget.dart::ProfileCountsWidget" {
+  +int count
+  +String label
+  +Widget build()
+  +String formatCount()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "instafake_flutter::widgets::profile_counts_widget.dart::ProfileCountsWidget"
+
+class "instafake_flutter::widgets::profile_handler_widget.dart::ProfileHandlerWidget" {
+  +String? picUrl
+  +String username
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "instafake_flutter::widgets::profile_handler_widget.dart::ProfileHandlerWidget"
+
+class "instafake_flutter::widgets::story_widget.dart::StoryWidget" {
+  +double width
+  +StoryResponse story
+  +Widget build()
+}
+
+"instafake_flutter::widgets::story_widget.dart::StoryWidget" o-- "instafake_flutter::core::domain::dto::story_response.dart::StoryResponse"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "instafake_flutter::widgets::story_widget.dart::StoryWidget"
+
+class "instafake_flutter::widgets::timeline_post_widget.dart::TimelinePostWidget" {
+  +double width
+  +PostModel post
+  +double height
+  +HomeProvider homeProvider
+  +UserModel userData
+  +bool isLiked
+  +int index
+  +Widget build()
+}
+
+"instafake_flutter::widgets::timeline_post_widget.dart::TimelinePostWidget" o-- "instafake_flutter::core::data::models::post_model.dart::PostModel"
+"instafake_flutter::widgets::timeline_post_widget.dart::TimelinePostWidget" o-- "instafake_flutter::core::providers::home_provider.dart::HomeProvider"
+"instafake_flutter::widgets::timeline_post_widget.dart::TimelinePostWidget" o-- "instafake_flutter::core::data::models::user_model.dart::UserModel"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "instafake_flutter::widgets::timeline_post_widget.dart::TimelinePostWidget"
+
+
+@enduml
